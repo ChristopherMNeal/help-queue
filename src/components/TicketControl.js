@@ -1,42 +1,43 @@
-import React from 'react';
-import NewTicketForm from './NewTicketForm';
-import TicketList from './TicketList';
-import Debugging from './Debugging';
-import Fifteen from './Fifteen';
-import PairHelp from './PairHelp';
+import React from "react";
+import NewTicketForm from "./NewTicketForm";
+import TicketList from "./TicketList";
+import Debugging from "./Debugging";
+import Fifteen from "./Fifteen";
+import PairHelp from "./PairHelp";
 
 class TicketControl extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
       pageNumber: 0,
-      mainTicketList: []
+      mainTicketList: [],
     };
   }
 
   handleAddingNewTicketToList = (newTicket) => {
-    const newMainTicketList= this.state.mainTicketList.concat(newTicket);
-    this.setState({mainTicketList: newMainTicketList,
-    formVisibleOnPage: false })
-  }
+    const newMainTicketList = this.state.mainTicketList.concat(newTicket);
+    this.setState({
+      mainTicketList: newMainTicketList,
+      pageNumber: 0, // determine which page shows after adding the help req
+    });
+  };
 
   handleClick = () => {
     if (this.state.pageNumber < 4) {
-      this.setState(prevState => ({
-      pageNumber: parseInt(prevState.pageNumber) + 1
-      })) 
+      this.setState((prevState) => ({
+        pageNumber: parseInt(prevState.pageNumber) + 1,
+      }));
     } else {
       this.setState({
-        pageNumber: 0
-        }) 
-    };
-  }  
-  
+        pageNumber: 0,
+      });
+    }
+  };
+
   handleClickNo = () => {
     this.setState({
-      pageNumber: 0
-    }) 
+      pageNumber: 0,
+    });
   };
 
   /*
@@ -47,38 +48,44 @@ class TicketControl extends React.Component {
   4: form, button: "ticket list" -> 0
   */
 
-  render(){
+  render() {
     let currentlyVisibleState = null;
     let buttonText = null;
     let NoButtonText = null;
     if (this.state.pageNumber === 0) {
-      currentlyVisibleState = <TicketList ticketList={this.state.mainTicketList} />;
+      currentlyVisibleState = (
+        <TicketList ticketList={this.state.mainTicketList} />
+      );
       buttonText = "Add Ticket";
     } else if (this.state.pageNumber === 1) {
-      currentlyVisibleState = <Debugging />
+      currentlyVisibleState = <Debugging />;
       buttonText = "Yes";
       NoButtonText = "No";
-    } else if (this.state.pageNumber ===2) {
-      currentlyVisibleState = <PairHelp />
+    } else if (this.state.pageNumber === 2) {
+      currentlyVisibleState = <PairHelp />;
       buttonText = "Yes";
       NoButtonText = "No";
-    } else if (this.state.pageNumber ===3) {
-      currentlyVisibleState = <Fifteen />
+    } else if (this.state.pageNumber === 3) {
+      currentlyVisibleState = <Fifteen />;
       buttonText = "Yes";
       NoButtonText = "No";
     } else {
-      currentlyVisibleState = <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList} />
-      buttonText = "Return to Ticket List"; // new code
+      currentlyVisibleState = (
+        <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList} />
+      );
+      buttonText = "Return to Ticket List";
     }
 
     if (this.state.pageNumber > 0 && this.state.pageNumber < 4) {
       return (
         <React.Fragment>
           {currentlyVisibleState}
-          <button onClick={this.handleClick}>{buttonText}</button> { /* new code */ }
-          <button onClick={this.handleClickNo}>{NoButtonText}</button> { /* new code */ }
+          <button onClick={this.handleClick}>{buttonText}</button>{" "}
+          {/* new code */}
+          <button onClick={this.handleClickNo}>{NoButtonText}</button>{" "}
+          {/* new code */}
         </React.Fragment>
-      )
+      );
     } else {
       return (
         <React.Fragment>
@@ -88,7 +95,6 @@ class TicketControl extends React.Component {
       );
     }
   }
-
 }
 
 export default TicketControl;
