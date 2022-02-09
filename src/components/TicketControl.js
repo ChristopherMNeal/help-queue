@@ -18,7 +18,7 @@ class TicketControl extends React.Component {
     const newMainTicketList = this.state.mainTicketList.concat(newTicket);
     this.setState({
       mainTicketList: newMainTicketList,
-      formVisibleOnPage: false,
+      pageNumber: 0, // determine which page shows after adding the help req
     });
   };
 
