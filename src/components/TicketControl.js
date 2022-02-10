@@ -4,6 +4,8 @@ import TicketList from "./TicketList";
 import Debugging from "./Debugging";
 import Fifteen from "./Fifteen";
 import PairHelp from "./PairHelp";
+import TicketDetail from "./TicketDetail";
+import EditTicketForm from "./EditTicketForm";
 
 class TicketControl extends React.Component {
   constructor(props) {
@@ -11,6 +13,8 @@ class TicketControl extends React.Component {
     this.state = {
       pageNumber: 0,
       mainTicketList: [],
+      selectedTicket: null,
+      editing: false,
     };
   }
 
@@ -23,7 +27,13 @@ class TicketControl extends React.Component {
   };
 
   handleClick = () => {
-    if (this.state.pageNumber < 4) {
+    if (this.state.selectedTicket != null) {
+      this.setState((prevState) => ({
+        pageNumber: 0,
+        selectedTicket: null,
+        editing: false,
+      }));
+    } else if (this.state.pageNumber < 4) {
       this.setState((prevState) => ({
         pageNumber: parseInt(prevState.pageNumber) + 1,
       }));
@@ -48,13 +58,65 @@ class TicketControl extends React.Component {
   4: form, button: "ticket list" -> 0
   */
 
+  handleChangingSelectedTicket = (id) => {
+    const selectedTicket = this.state.mainTicketList.filter(
+      (ticket) => ticket.id === id
+    )[0];
+    this.setState({ selectedTicket: selectedTicket });
+  };
+
+  handleDeletingTicket = (id) => {
+    const newMainTicketList = this.state.mainTicketList.filter(
+      (ticket) => ticket.id !== id
+    );
+    this.setState({
+      mainTicketList: newMainTicketList,
+      selectedTicket: null,
+    });
+  };
+
+  handleEditClick = () => {
+    this.setState({ editing: true });
+  };
+
+  handleTicketEditingInList = (ticketToEdit) => {
+    const editedMainTicketList = this.state.mainTicketList
+      .filter((ticket) => ticket.id !== this.state.selectedTicket.id)
+      .concat(ticketToEdit);
+    this.setState({
+      mainTicketList: editedMainTicketList,
+      editing: false,
+      selectedTicket: null,
+    });
+  };
+
   render() {
     let currentlyVisibleState = null;
     let buttonText = null;
     let NoButtonText = null;
-    if (this.state.pageNumber === 0) {
+    if (this.state.editing) {
       currentlyVisibleState = (
-        <TicketList ticketList={this.state.mainTicketList} />
+        <EditTicketForm
+          ticket={this.state.selectedTicket}
+          onEditTicket={this.handleTicketEditingInList}
+        />
+      );
+      buttonText = "Return to Ticket List";
+    } else if (this.state.selectedTicket != null) {
+      currentlyVisibleState = (
+        <TicketDetail
+          ticket={this.state.selectedTicket}
+          onClickingDelete={this.handleDeletingTicket}
+          onClickingEdit={this.handleEditClick}
+        />
+      );
+      buttonText = "Return to Ticket List";
+    } else if (this.state.pageNumber === 0) {
+      currentlyVisibleState = (
+        <TicketList
+          ticketList={this.state.mainTicketList}
+          onTicketSelection={this.handleChangingSelectedTicket}
+        />
       );
       buttonText = "Add Ticket";
     } else if (this.state.pageNumber === 1) {
